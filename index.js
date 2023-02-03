@@ -6,13 +6,13 @@ const karyawan = require("./routes/karyawan.routes.js");
 const user = require("./routes/users.routes.js");
 const wrong_routes = require("./error_handling/wrong_routes_warning.js");
 
-// var corsOptions = {
-//     origin: 'http://localhost:3000',
-//     optionsSuccessStatus: 200
-// };
+var corsOptions = {
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200
+};
 
 app.use(express.json());
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use(
     express.urlencoded({
