@@ -19,7 +19,7 @@ Karyawan.insertNewKaryawan = async (request, result, next) => {
             }
 
             // console.log(request.body);
-            return result.status(200).send({ id: res.insertId, data: res, message: `Data karyawan has been inserted.` });
+            return result.status(200).send({ id: res.insertId, message: `Data karyawan has been inserted.` });
 
         });
 
@@ -53,7 +53,7 @@ Karyawan.getAllKaryawan = async (request, result, next) => {
 
 Karyawan.getKaryawanByRepID = async (request, result, next) => {
     try {
-        await sql.query("SELECT atasan_a.rm_rep_id as rm_mst_gepd, atasan_a.rm_name as NamaGEPD, atasan_b.rm_rep_id as rm_mst_epd, atasan_b.rm_name as NamaEPD, member.rm_branch_id, member.rm_name, member.rm_rep_id FROM karyawan as member LEFT JOIN (SELECT * FROM karyawan as atasan WHERE atasan.rm_current_position = 'EPD' OR atasan.rm_current_position = 'GEPD') as atasan_b ON member.rm_manager_id = atasan_b.rm_rep_id RIGHT JOIN (SELECT * FROM karyawan as atasan WHERE atasan.rm_current_position = 'GEPD' ) as atasan_a ON atasan_b.rm_manager_id = atasan_a.rm_rep_id WHERE member.rm_current_position = 'EPC' AND member.rm_rep_id = ? ",
+        await sql.query("SELECT * FROM karyawan WHERE rm_current_position = 'EPC' AND rm_rep_id = ? ",
             [request.body.repID], (err, res) => {
                 if (err) {
                     console.log("error: ", err);
@@ -63,19 +63,18 @@ Karyawan.getKaryawanByRepID = async (request, result, next) => {
                 var message;
                 var status = 200;
                 if (res.length) {
-                    message = 'List joined by member and atasan by manager ID';
+                    message = 'All karyawan by rep ID';
                 } else {
                     // status = 204;
                     message = 'No data';
-                    res = {
-                        rm_mst_gepd: "Tidak ada data",
-                        NamaGEPD: "",
-                        rm_mst_epd: "",
-                        NamaEPD: "",
-                        rm_branch_id: "",
+                    res = [{
+                        id: "10",
+                        rm_branch_id: "Tidak ada data",
+                        rm_rep_id: "",
                         rm_name: "",
-                        rm_rep_id: ""
-                    };
+                        rm_current_position: "",
+                        rm_manager_id: "",
+                    }];
                 }
                 console.log("found karyawan: ", res);
                 return result.status(status).send({ error: false, data: res, message: message });
@@ -102,7 +101,7 @@ Karyawan.getKaryawanByManagerID = async (request, result, next) => {
                 } else {
                     // status = 204;
                     message = 'No data';
-                    res = {
+                    res = [{
                         rm_mst_gepd: "Tidak ada data",
                         NamaGEPD: "",
                         rm_mst_epd: "",
@@ -110,7 +109,7 @@ Karyawan.getKaryawanByManagerID = async (request, result, next) => {
                         rm_branch_id: "",
                         rm_name: "",
                         rm_rep_id: ""
-                    };
+                    }];
                 }
                 console.log("found karyawan: ", res);
                 return result.status(status).send({ error: false, data: res, message: message });
